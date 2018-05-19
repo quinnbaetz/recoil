@@ -45,7 +45,6 @@ class BaseComponent
 
   #Takes a partial object and triggers any properties looking at it's listeners
   update: (newObj, changes=null) ->
-
     if changes?
       #Prefered performance method
       for change in changes

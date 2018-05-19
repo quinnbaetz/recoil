@@ -25,8 +25,8 @@ class EventRegistry
 
   unbind: (watcherId) ->
     delete @_binds[watcherId]
-    #TODO: can clean up any events for this watcher using _watcherToEvents
-
+    @clearTriggers(watcherId)
+    
   triggerListener: (watcherId) ->
     if @_binds[watcherId]
       @_binds[watcherId]()
