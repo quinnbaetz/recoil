@@ -28,6 +28,7 @@ class JobStore extends BaseStore
 
 ## Using an Object item  
 _(rerenders automatically If and only if a used property is changed (status, service))_ 
+_currently doesn't work for nested items (i.e. job.service_location.lat)_
 
 ```
 class JobItem extends React.Component
@@ -48,7 +49,6 @@ _(rerenders automatically If and only if a used property is changed (status, ser
 class JobItem extends React.Component
   render: ->
     super()
-    job = JobStore.getWatchedObject(@props.id, @getId())
     div null,
       span null,
         JobStore.get(@props.id, 'service', @getId())
