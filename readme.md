@@ -54,6 +54,21 @@ class JobItem extends BaseComponent
         JobStore.get(@props.id, 'service', @getId())
 ```
 
+## Getting a Object property 2
+In this case the component will not attempt to trigger a rerender when the user is off duty, the triggers for full_name were never set up when the user is off duty. 
+
+```
+class UserItem extends BaseComponent
+  render: ->
+    super()
+    user = UserStore.getWatchedObject(@props.user_id, @getId())
+    div null,
+      if user.on_duty
+        "#{user.full_name} is on duty"
+      else
+        "Off duty"
+```
+
 
 ## Add an object to the store
 _triggers a rerender on any component that cares about this job_
@@ -94,7 +109,7 @@ class Router extends BaseComponent
     ...
     UserSettingStore.get(filter_id, "filters", @refreshWatcherId)
     ...
-    
+
 ```
 
 
