@@ -93,9 +93,8 @@ class Router extends BaseComponent
   updateSearch() ->
     ...
     UserSettingStore.get(filter_id, "filters", @refreshWatcherId)
-
-  refresh: ->
-    window.location.reload()
+    ...
+    
 ```
 
 
