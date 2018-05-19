@@ -1,0 +1,14 @@
+{
+  "name": "recoil",
+  "version": "1.0.0",
+  "description": "A dirty replacement for redux",
+  "dependencies": {
+    "react": "^16.3.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Quinn Baetz",
+  "license": "ISC"
+}
