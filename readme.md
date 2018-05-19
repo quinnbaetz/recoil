@@ -1,11 +1,11 @@
 This is an implementation of Swoops store architecture in it's purest form.
 It's a response to redux and attempts to simplify by removing actions and reducers. 
-Because we know what changes are made to objects we can be much more intelligent about checking equality and rerendering
+Because we know what changes are made to objects we can be much more intelligent about checking equality and rerendering.
 Components are expected to grab changes they want directly from the store, this will set up event listeners to rerender the component when those properties change.
 
-Examples
+#Examples
 
-* Getting a list _(rerenders automatically If and only if something is removed or added to the list)_
+## Getting a list _(rerenders automatically If and only if something is removed or added to the list)_
 
 ```
 class JobList extends React.Component
@@ -16,7 +16,7 @@ class JobList extends React.Component
       JobItem(id: id)
 ```
 
-* Creating a list in a store
+## Creating a list in a store
 ```
 class JobStore extends BaseStore
   constructor(args...)
@@ -25,7 +25,7 @@ class JobStore extends BaseStore
 
 ```
 
-* Using an Object item  _(rerenders automatically If and only if a used property is changed (status, service))_ 
+## Using an Object item  _(rerenders automatically If and only if a used property is changed (status, service))_ 
 
 ```
 class JobItem extends React.Component
@@ -39,7 +39,7 @@ class JobItem extends React.Component
         job.status
 ```
 
-* Getting a property  _(rerenders automatically If and only if a used property is changed (status, service))_ 
+## Getting a property  _(rerenders automatically If and only if a used property is changed (status, service))_ 
 
 ```
 class JobItem extends React.Component
@@ -52,18 +52,21 @@ class JobItem extends React.Component
 ```
 
 
-* Add an object to the store
+## Add an object to the store
 ```
 JobStore.add(job)
-
 ```
 
-* Update an object in the store (status, service) changed.  _still a work in progress_
+## Update an object in the store  changed.  
+* It's expected you will know what has changed
+_still a work in progress_
 ```
-JobStore.update(job, ["status", "service"])
+#If you know what's changed
+JobStore.update(job, [status, service]) #prefered
 
+#If you don't know what's changed
+JobStore.update(job) #depricated
 ```
-
 
 
 Considerations:
