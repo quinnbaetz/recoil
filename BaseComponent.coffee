@@ -26,7 +26,7 @@ class BaseComponent extends React.PureComponent
   getNewWatcherId: => BC_ID_ITTR++
 
   #Registers listeners to be removed automatically and binds
-  bindListener: (store, name, callback=@rerender) =>  
+  bindListener: (store, name, callback=@forceUpdate) =>  
     @_event_listeners.push({
       store: store,
       name: name,
@@ -35,13 +35,10 @@ class BaseComponent extends React.PureComponent
     if @_mounted
       store.bind(name, callback)      
 
-  createNewWatcher: (callback=@render) =>
+  createNewWatcher: (callback=@forceUpdate) =>
     watcher_id = @getNewWatcherId()
     @bindListener(EventRegistry, watcher_id, callback)
     return watcher_id
-
-  _rerender: =>
-    @forceUpdate()
 
   render: ->
     EventRegistry.clearTriggers(@getId())

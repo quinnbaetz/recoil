@@ -23,8 +23,15 @@ class BaseComponent
   getWatchedObject: (id, watcherId) ->
     if @objs[id]?
       return new Proxy(@objs[id],
-        set: (target, property, value) -> console.warn('Currently this is a read only object')
-        get: (target, property) => @get(id, property, watcerId)
+        set: (target, prop, value) -> console.warn('Currently this is a read only object')
+        get: (target, prop) => 
+          value = _.get(target, prop)
+          if typeof(value) == "Object"
+            #TODO: build nested Proxies that build up watched attribute
+            console.warn('Currently can\'t get nested objects with a watched object')
+          else
+            @get(target.id, prop, watcherId)
+
     else
       @_registerWatcher(watcherId, null, id)
     
