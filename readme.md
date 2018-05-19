@@ -9,7 +9,7 @@ Components are expected to grab changes they want directly from the store, this 
 _(rerenders automatically If and only if something is removed or added to the list)_
 
 ```
-class JobList extends React.Component
+class JobList extends BaseComponent
   render: ->
     super()
     job_ids = JobStore.getList('All', @getId())
@@ -31,7 +31,7 @@ _(rerenders automatically If and only if a used property is changed (status, ser
 _currently doesn't work for nested items (i.e. job.service_location.lat)_
 
 ```
-class JobItem extends React.Component
+class JobItem extends BaseComponent
   render: ->
     super()
     job = JobStore.getWatchedObject(@props.id, @getId())
@@ -46,7 +46,7 @@ class JobItem extends React.Component
 _(rerenders automatically If and only if a used property is changed (status, service))_ 
 
 ```
-class JobItem extends React.Component
+class JobItem extends BaseComponent
   render: ->
     super()
     div null,
@@ -71,6 +71,33 @@ JobStore.update(job, [status, service]) #prefered
 #If you don't know what's changed
 JobStore.update(job) #depricated
 ```
+
+## Advanced: refreshing page when release is added
+```
+class Router extends BaseComponent
+  constructor() ->
+    @refreshWatcherId = @createNewWatcher(@refresh)
+    ReleaseStore.getList("webReleases", @refreshWatcherId)
+
+  refresh: ->
+    window.location.reload()
+```
+
+## Advanced: refreshing search when filter is changed
+```
+class Router extends BaseComponent
+  constructor() ->
+    @refreshWatcherId = @createNewWatcher(@updateSearch)
+    @updateSearch()
+
+  updateSearch() ->
+    ...
+    UserSettingStore.get(filter_id, "filters", @refreshWatcherId)
+
+  refresh: ->
+    window.location.reload()
+```
+
 
 
 Considerations:
