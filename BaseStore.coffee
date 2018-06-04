@@ -6,7 +6,7 @@ _ = require 'lodash'
 Proxy = require('proxy-polyfill/src/proxy');
 
 class BaseComponent
-  constructor: ->
+  constructor: (props={}) ->
     @objs = {}
     @_modelName = 'Base'
     @_lists = {}
@@ -18,23 +18,34 @@ class BaseComponent
 
   getName: () -> @_modelName
 
-  #TODO: currently this doesn't work for nested properties (e.g. job.service.lat) 
-  # as the get property will only be the first key.
-  getWatchedObject: (id, watcherId) ->
-    if @objs[id]?
-      return new Proxy(@objs[id],
-        set: (target, prop, value) -> console.warn('Currently this is a read only object')
-        get: (target, prop) => 
-          value = _.get(target, prop)
-          if typeof(value) == "Object"
-            #TODO: build nested Proxies that build up watched attribute
-            console.warn('Currently can\'t get nested objects with a watched object')
-          else
-            @get(target.id, prop, watcherId)
+  getWatchedObject: (id, watcherId, path="") ->
+    value = @objs[id]
+    if path.length > 0
+      value = _.get(@objs[id], path)
+
+    if value?
+      return new Proxy(value,
+        set: _.partialRight(@proxySet, id, path)
+        get: _.partialRight(@proxyGet, id, path)
 
     else
-      @_registerWatcher(watcherId, null, id)
-    
+      #Wait for this object to exist
+      @_registerWatcher(watcherId, id)
+
+
+  proxyGet: (target, prop, id, path="") ->
+    value = _.get(target, prop)
+    if typeof(value) == "Object"
+      return @getWatchedObject(id, watcherId, path+prop+".")
+    else
+      return @get(id, path+prop, watcherId)
+
+
+  proxySet: (target, prop, value, id, path="") ->
+    item = _.get(@objs[id], path+prop)
+    _.set(item, path+prop, value)
+    #TODO: if value is an object we need to trigger all watchers on all of it's properties as well
+    @update(item, path+prop)
 
   getList: (name, watcherId) ->
     EventRegistry.register(watcherId, name)
@@ -44,9 +55,9 @@ class BaseComponent
 
   add: (newObj) ->
     if !@objs[newObj.id]?
-      EventRegistry.triggerObjListeners(@getName(), @_list.name, newObj.id)
+      @_triggerListeners(newObj.id)
     @objs[newObj.id] = newObj
-    
+
     #TODO: optimization can be done here by having the list validator subscribe to property listeners
     @_updateLists(newObj)
 
@@ -55,23 +66,26 @@ class BaseComponent
     if changes?
       #Prefered performance method
       for change in changes
-        EventRegistry.triggerPropListeners(@getName(), null, id, change)
+        @_triggerListeners(id, change)
     else #FALLBACK
-      #If we don't know what's changed, just look through the things we are watching (if any) and trigger those 
+      #If we don't know what's changed, just look through the things we are watching (if any) and trigger those
       #If they've changed
       id = newObj.id
       oldObj = @objs[id]
 
-      props = EventRegistry.getWatchedProperties(@getName(), null, id);
+      props = EventRegistry.getWatchedProperties(@getName(), id);
 
       for prop in props
         if _.get(oldObj, prop) != _.get(newObj, prop)
-          EventRegistry.triggerPropListeners(@getName(), listName, id, prop);
-          
+          @_triggerListeners(id, prop)
+
     @add(newObj)
-    
-  _registerWatcher: (watcherId, list, id, prop) ->
-    EventRegistry.register(watcherId, @getName(), list, id, prop)
+
+  _triggerListeners: (objId=null, property=null) ->
+    @triggerListeners(@getName(), objId, property)
+
+  _registerWatcher: (watcherId, id, prop) ->
+    EventRegistry.register(watcherId, @getName(), id, prop)
 
   _registerList: (name, validator) ->
     @_lists[name] = new List(name, validator)
@@ -79,7 +93,6 @@ class BaseComponent
   _updateLists: (newObj) ->
     for list in @_lists
       if @_lists.updateListObj(newObj)
-        EventRegistry.triggerListListeners(@getName(), @_list.name)
-
+        @_triggerListeners(@_list.name)
 
 module.exports = BaseComponent

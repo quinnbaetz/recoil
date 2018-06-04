@@ -10,9 +10,9 @@ class EventRegistry
   #A map of watchers to their callbacks
   _binds: {}
   _triggerTimeouts: {}
-  register: (watcherId, modelId, listId=null, objId=null, property=null) ->
+  register: (watcherId, modelId, objId=null, property=null) ->
     if watcherId?
-      eventKey = [modelId, listId, objId, property, watcherId]
+      eventKey = [modelId, objId, property, watcherId]
       @_createNestedMap(eventKey...)
 
       if !@_watcherToEvents[watcherId]?
@@ -26,7 +26,7 @@ class EventRegistry
   unbind: (watcherId) ->
     delete @_binds[watcherId]
     @clearTriggers(watcherId)
-    
+
   triggerListener: (watcherId) ->
     if @_binds[watcherId]
       @_binds[watcherId]()
@@ -34,36 +34,34 @@ class EventRegistry
   sendPendingTriggers: (id, count) =>
     @triggerListener(id)
     delete @_triggerTimeouts[id]
-  
-  #Adds a slight delay to callbacks, so that we can dedupe 
+
+  #Adds a slight delay to callbacks, so that we can dedupe
   #Deduping is important in case there are many property changes that come in at once (albeit a tiny bit hacky)
-  triggerListeners: (modelId, listId=null, objId=null, property=null) =>
-    watcherIds = @_getKeys(modelId, listId, objId, property)
+  triggerListeners: (modelId, objId=null, property=null) =>
+    watcherIds = @_getKeys(modelId, objId, property)
     for id in watcherIds
       if @_triggerTimeouts[id]
         clearTimeout(@_triggerTimeout)
       @_triggerTimeout = setTimeout(@sendPendingTriggers, 20)
 
-  #These trigger any watchers registered to passed in properties    
-  triggerPropListeners: (modelId, listId, objId, property) ->
-    @triggerListeners(modelId, listId, objId, property)
-  triggerObjListeners: (modelId, listId, objId) ->
-    @triggerListeners(modelId, listId, objId, null)
-  triggerListListeners: (modelId, listId) ->
-    @triggerListeners(modelId, listId, null, null)
+  #These trigger any watchers registered to passed in properties
+  triggerPropListeners: (modelId, objId, property) ->
+    @triggerListeners(modelId, objId, property)
+  triggerObjListeners: (modelId, objId) ->
+    @triggerListeners(modelId, objId, null)
+  triggerListListeners: @triggerListListeners
 
-
-  getWatchedProperties: (modelId, listId, objId) ->
-    idPropertyWatchers = @_getKeys(modelId, listId, objId)
-    generalPropertyWatchers = @_getKeys(modelId, listId, null)
+  getWatchedProperties: (modelId, objId) ->
+    idPropertyWatchers = @_getKeys(modelId, objId)
+    generalPropertyWatchers = @_getKeys(modelId, null)
     watchedProps = idPropertyWatchers.concat(generalPropertyWatchers)
     return watchedProps
-  
-  #Removes all the associated 
+
+  #Removes all the associated
   clearTriggers: (watcherId) ->
     if watcherId?
       if @_watcherToEvents[watcherId]
-        #TODO: might be more performant to just delete the leaf node here and 
+        #TODO: might be more performant to just delete the leaf node here and
         #      prune the rest of the path later (essentially garbage collect when memory gets low)
         #      alternatively if every child only has one child we can prune the parent node
         for keys in @_watcherToEvents[watcherId]

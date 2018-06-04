@@ -22,18 +22,19 @@ class BaseComponent extends React.PureComponent
         trigger.store.unbind(trigger.name, trigger.callback)
 
   getId: => @_id
-  
+
   getNewWatcherId: => BC_ID_ITTR++
 
   #Registers listeners to be removed automatically and binds
-  bindListener: (store, name, callback=@forceUpdate) =>  
+  #TODO: Do we need this, or can we fully commit to recoil?  Perhaps for (LOADED)
+  bindListener: (store, name, callback=@forceUpdate) =>
     @_event_listeners.push({
       store: store,
       name: name,
       callback: callback
     })
     if @_mounted
-      store.bind(name, callback)      
+      store.bind(name, callback)
 
   createNewWatcher: (callback=@forceUpdate) =>
     watcher_id = @getNewWatcherId()
