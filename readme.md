@@ -1,7 +1,7 @@
 This is an implementation of Swoops store architecture in it's purest form.
 It's a response to redux and attempts to simplify by removing actions and reducers. 
 Because we know what changes are made to objects we can be much more intelligent about checking equality and rerendering.
-Components are expected to grab changes they want directly from the store, this will set up event listeners to rerender the component when those properties change.
+Components are expected to grab objects/properties they want directly from the store, this will set up event listeners to rerender the component when those properties change.
 
 # Examples
 
