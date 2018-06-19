@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-
+import recoil from 'recoil'
+console.log(recoil)
 class App extends Component {
   render() {
     return (

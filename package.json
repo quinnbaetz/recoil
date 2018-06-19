@@ -2,6 +2,7 @@
   "name": "recoil",
   "version": "1.0.0",
   "description": "A dirty replacement for redux",
+  "main": "src/index.js",
   "dependencies": {
     "lodash": "^4.17.10",
     "proxy-polyfill": "^0.3.0",
