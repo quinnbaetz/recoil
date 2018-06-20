@@ -1,9 +1,9 @@
-import BaseComponent from 'BaseComponent'
-import BaseStore from 'BaseStore'
-import EventRegistry from 'EventRegistry'
-import List from 'List'
+import BaseComponent from './BaseComponent'
+import BaseStore from './BaseStore'
+import EventRegistry from './EventRegistry'
+import List from './List'
 
-export {
+export default {
   BaseComponent,
   BaseStore,
   EventRegistry,
