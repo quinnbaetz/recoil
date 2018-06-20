@@ -1,10 +1,11 @@
-import React, {Component} from 'react';
-import UserStore from '../stores/user_store';
-import BaseComponent from '../recoil/BaseComponent'
-import Utils from '../utils'
-import LocationTextNormal from './LocationTextNormal'
-export default class UserListNormal extends BaseComponent {
+import React from 'react';
+import UserStore from '../../stores/user_store';
+import BaseComponent from '../../recoil/BaseComponent'
+import Utils from '../../utils'
+import LocationTextNormal from './LocationText'
+export default class UserList extends BaseComponent {
   render() {
+    super.render()
     return (
       <li
         style={{

@@ -30,7 +30,6 @@ export default class UserUpdater extends BaseComponent {
   }
   updateRandomUserName() {
     const updateUserId = Math.floor(Math.random()*(userId-1))
-    console.log(updateUserId)
     const obj = {
       id: updateUserId,
       name: UserStore.get(updateUserId, "name")+"1"
@@ -82,6 +81,10 @@ export default class UserUpdater extends BaseComponent {
     location.address = user.location.address + "1"
   }
 
+  triggerEvent(e) {
+    UserStore.triggerEvent(e.target.name)
+  }
+
   render() {
     return (
       <div>
@@ -99,6 +102,11 @@ export default class UserUpdater extends BaseComponent {
           <button onClick={this.updateRandomUserAddress}>Update Random Users Address With Change</button>
           <button onClick={this.updateRandomUserAddressWithoutChange}>Update Random Users Address Without Change</button>
           <button onClick={this.updateWatchedObjectAddress}>Update Random Watched Objects Address</button>
+        </div>
+        <div>
+          <button name={UserStore.LOADED} onClick={this.triggerEvent}>Trigger Custom Loaded Event</button>
+          <button name={UserStore.RANDOMIZE_ID} onClick={this.triggerEvent}>Trigger Custom Randomize Event</button>
+
         </div>
        </div>
     )

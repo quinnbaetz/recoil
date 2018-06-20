@@ -1,9 +1,10 @@
-import React, {Component} from 'react';
-import UserStore from '../stores/user_store';
-import BaseComponent from '../recoil/BaseComponent'
-import Utils from '../utils'
-export default class LocationTextNormal extends BaseComponent {
+import React from 'react';
+import UserStore from '../../stores/user_store';
+import BaseComponent from '../../recoil/BaseComponent'
+import Utils from '../../utils'
+export default class LocationText extends BaseComponent {
   render() {
+    super.render()
     return (
       <span
         style={{

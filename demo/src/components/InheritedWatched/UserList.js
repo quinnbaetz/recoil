@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
-import UserStore from '../stores/user_store';
-import BaseComponent from '../recoil/BaseComponent'
-import Utils from '../utils'
-import UserRowWatched from './UserRowWatched'
-export default class UserListNormal extends BaseComponent {
+import React from 'react';
+import UserStore from '../../stores/user_store';
+import BaseComponent from '../../recoil/BaseComponent'
+import Utils from '../../utils'
+import UserRowWatched from './UserRow'
+export default class UserList extends BaseComponent {
   render() {
-    //super.render()#
+    super.render()
     const store = UserStore.getWrappedStore(this.getId())
     return (
       <ul

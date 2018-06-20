@@ -30,3 +30,8 @@ ul {
   width: 45%;
   display: inline-block;
 }
+
+.watchers {
+  text-align: left;
+  padding: 30px;
+}

@@ -63,7 +63,6 @@ class EventRegistry {
   //Deduping is important in case there are many property changes that come in at once (albeit a tiny bit hacky)
   triggerListeners(modelId, objId=null, property=null) {
     const watcherIds = this._getKeys(modelId, objId, property);
-    console.log("TRIGGERING LISTENERS: ", modelId, objId, property, watcherIds)
     for (let id of watcherIds) {
       if (this._triggerTimeouts[id]) {
         clearTimeout(this._triggerTimeouts[id]);
@@ -107,10 +106,10 @@ class EventRegistry {
 
   //removes an entire path of a tree if it's empty
   _prunePath(tree, path) {
-    if (_.isEmpty(_.get(tree, path))) {
-      this._removeNode(tree, path);
-      return this._prunePath(tree, path.slice(0, -1));
-    }
+    //if (tree && path.length > 0 && _.isEmpty(_.get(tree, path))) {
+    //  this._removeNode(tree, path);
+    //  return this._prunePath(tree, path.slice(0, -1));
+    //}
   }
 
   //removes a specific node given a path into the tree

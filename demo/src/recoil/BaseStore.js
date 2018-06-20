@@ -5,13 +5,17 @@ import EventRegistry from './EventRegistry'
 
 //NEEDED FOR IE (FIGURE THIS OUT)
 //import Proxy from 'proxy-polyfill/src/proxy'
-
+let createdStores = {}
+export {
+  createdStores
+}
 export default class BaseStore {
   constructor(props={}) {
     this.objs = {};
-    this._modelName = 'Base';
+    this._modelName = props.modelName || 'BaseStore';
     this._lists = {};
     this._registerList('All', obj => true);
+    createdStores[this.getName()] = this
   }
 
   get(id, prop, watcherId) {
@@ -23,9 +27,9 @@ export default class BaseStore {
 
   getWrappedStore(watcherId) {
     const watcherFilledIn = {
-      get: _.partial(this.get, _, _, watcherId),
-      getWatchedObject: _.partial(this.getWatchedObject, _, watcherId, _),
-      getList: _.partial(this.getList, _, watcherId),
+      get: _.bind(this.get, this, _, _, watcherId),
+      getWatchedObject: _.bind(this.getWatchedObject, this, _, watcherId),
+      getList: _.bind(this.getList, this, _, watcherId),
     }
     //HACK: to get the same interface as the BaseStore
     watcherFilledIn.__proto__ = this
@@ -109,12 +113,9 @@ export default class BaseStore {
     const value = _.get(target, prop);
     const route = path ? path+"."+prop : prop
 
-    console.log("VALUE: ", target, prop, id, path, watcherId, value)
     if (typeof(value) === "object") {
-      console.log("Object is value")
       return this.getWatchedObject(id, watcherId, route);
     } else {
-      console.log("Object is plain text")
       return this.get(id, route, watcherId);
     }
   }
@@ -125,8 +126,9 @@ export default class BaseStore {
 
     const item = {
       id: id,
-      [route]: value
     }
+    //properly handles setting nested values
+    _.set(item, route, value)
 
     this.update(item, [route]);
     return true;
@@ -134,6 +136,14 @@ export default class BaseStore {
 
   _triggerListeners(objId=null, property=null) {
     return EventRegistry.triggerListeners(this.getName(), objId, property);
+  }
+
+  registerEventWatcher(watcherId, eventName) {
+    return this._registerWatcher(watcherId, eventName)
+  }
+
+  triggerEvent(eventName){
+    this._triggerListeners(eventName)
   }
 
   _registerWatcher(watcherId, id, prop) {
